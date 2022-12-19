@@ -23,7 +23,11 @@ export DOWNLOAD_CHECK_CERTIFICATE:=$(CONFIG_DOWNLOAD_CHECK_CERTIFICATE)
 export DOWNLOAD_TOOL_CUSTOM:=$(CONFIG_DOWNLOAD_TOOL_CUSTOM)
 
 define dl_method_git
-$(if $(filter https://github.com/% git://github.com/%,$(1)),github_archive,git)
+$(if $(filter https://github.com/% git://github.com/%,$(1)),github_archive, \
+  $(if $(filter https://git.codelinaro.org/% git://git.codelinaro.org/%,$(1)),codelinaro_archive, \
+    git \
+  ) \
+)
 endef
 
 # Try to guess the download method from the URL
@@ -197,6 +201,25 @@ endef
 define DownloadMethod/git
 	$(call wrap_mirror,$(1),$(2), \
 		$(call DownloadMethod/rawgit) \
+	)
+endef
+
+define DownloadMethod/codelinaro_archive
+	$(call wrap_mirror,$(1),$(2), \
+		( \
+			echo "Downloading source code from codelinaro..."; \
+			mkdir -p $(TMP_DIR)/dl && \
+			cd $(TMP_DIR)/dl && \
+			rm -rf $(SUBDIR) && \
+			mkdir $(SUBDIR) && \
+			curl "$(patsubst git://%,http://%,$(URL:%.git=%))/-/archive/$(VERSION)/archive.tar.gz" \
+				| $(TAR) -C $(SUBDIR) --strip-components 1 -xzf - && \
+			echo "Repacking..." && \
+			export TAR_TIMESTAMP="$$(date -r $(SUBDIR)/Makefile -u +'%Y-%m-%dT%H:%M:%SZ')" && \
+			$(call dl_tar_pack,$(TMP_DIR)/dl/$(FILE),$(SUBDIR)) && \
+			mv $(TMP_DIR)/dl/$(FILE) $(DL_DIR)/ && \
+			rm -rf $(SUBDIR); \
+		) || ( $(call DownloadMethod/rawgit) ); \
 	)
 endef
 
