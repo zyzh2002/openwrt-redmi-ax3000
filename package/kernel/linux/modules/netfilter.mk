@@ -91,6 +91,7 @@ $(eval $(call KernelPackage,ipt-core))
 define KernelPackage/nf-conntrack
   SUBMENU:=$(NF_MENU)
   TITLE:=Netfilter connection tracking
+  DEPENDS:= +kmod-pptp
   KCONFIG:= \
         CONFIG_NETFILTER=y \
         CONFIG_NETFILTER_ADVANCED=y \
@@ -259,7 +260,7 @@ define KernelPackage/ipt-ipopt
   KCONFIG:=$(KCONFIG_IPT_IPOPT)
   FILES:=$(foreach mod,$(IPT_IPOPT-m),$(LINUX_DIR)/net/$(mod).ko)
   AUTOLOAD:=$(call AutoProbe,$(notdir $(IPT_IPOPT-m)))
-  $(call AddDepends/ipt)
+  $(call AddDepends/ipt,+kmod-nf-conntrack)
 endef
 
 define KernelPackage/ipt-ipopt/description
