@@ -1,0 +1,8 @@
+#ifdef __ARM32__
+	// Search in arch/arm/boot/dts/
+	#include <../../../arm64/boot/dts/qcom/ipq5018.dtsi>
+	#include <qcom-ipq5018.dtsi>
+#else __AARCH64__
+	// Search in arch/arm64/boot/dts/
+	#include <qcom/ipq5018.dtsi>
+#endif
