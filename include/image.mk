@@ -152,6 +152,7 @@ ifdef CONFIG_TARGET_IMAGES_GZIP
 endif
 
 
+ifneq ($(call kernel_patchver_ge,4.12.0),)
 # Disable noisy checks by default as in upstream
 DTC_FLAGS += \
   -Wno-unit_address_vs_reg \
@@ -165,6 +166,7 @@ DTC_FLAGS += \
   -Wno-graph_child_address \
   -Wno-graph_port \
   -Wno-unique_unit_address
+endif
 
 define Image/pad-to
 	dd if=$(1) of=$(1).new bs=$(2) conv=sync
@@ -187,6 +189,7 @@ define Image/BuildDTB
 		-I$(DTS_DIR)/include \
 		-I$(LINUX_DIR)/include/ \
 		-undef -D__DTS__ $(3) \
+		$(DEVICE_DTS_FLAGS) \
 		-o $(2).tmp $(1)
 	$(LINUX_DIR)/scripts/dtc/dtc -O dtb \
 		-i$(dir $(1)) $(DTC_FLAGS) $(4) \
@@ -393,6 +396,7 @@ define Device/Init
   DEVICE_DTS :=
   DEVICE_DTS_CONFIG :=
   DEVICE_DTS_DIR :=
+  DEVICE_DTS_FLAGS :=
   DEVICE_FDT_NUM :=
   SOC :=
 
@@ -416,7 +420,7 @@ DEFAULT_DEVICE_VARS := \
   DEVICE_NAME KERNEL KERNEL_INITRAMFS KERNEL_INITRAMFS_IMAGE KERNEL_SIZE \
   CMDLINE UBOOTENV_IN_UBI KERNEL_IN_UBI BLOCKSIZE PAGESIZE SUBPAGESIZE \
   VID_HDR_OFFSET UBINIZE_OPTS UBINIZE_PARTS MKUBIFS_OPTS DEVICE_DTS \
-  DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_FDT_NUM SOC BOARD_NAME \
+  DEVICE_DTS_CONFIG DEVICE_DTS_DIR DEVICE_DTS_FLAGS DEVICE_FDT_NUM SOC BOARD_NAME \
   UIMAGE_MAGIC UIMAGE_NAME \
   SUPPORTED_DEVICES IMAGE_METADATA KERNEL_ENTRY KERNEL_LOADADDR \
   IMAGE_PREFIX DEVICE_PACKAGES UBOOT_PATH IMAGE_SIZE \
