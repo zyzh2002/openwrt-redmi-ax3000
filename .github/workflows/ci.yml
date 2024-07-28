@@ -59,6 +59,8 @@ jobs:
             CONFIG_PACKAGE_kmod-bonding=y
             CONFIG_PACKAGE_kmod-qca-nss-ecm-standard=y
             CONFIG_PACKAGE_kmod-qca-nss-drv-pppoe=y
+            CONFIG_PACKAGE_kmod-ipt-nat6=y
+            CONFIG_PACKKAGE_kmod-batman-adv=y
 
             CONFIG_PACKAGE_luci=y
           EOF
